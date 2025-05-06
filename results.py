@@ -33,7 +33,7 @@ def plot_predict_rst(axs, nn, sample_file):
 	samples = np.array(samples.T)
 
 	# Select columns from the 9th column to the last column
-	selected_columns = samples[:, 8:108]
+	selected_columns = samples[:, 9:109]
 	
 	# Create a boolean mask where rows with all zeros in the selected columns are False
 	mask = ~(np.all(selected_columns == 0, axis=1))
@@ -41,8 +41,9 @@ def plot_predict_rst(axs, nn, sample_file):
 	# Filter train_samples using the mask
 	samples = samples[mask]
 	
-	X_test = samples[:,8:108]
+	X_test = samples[:,9:109]
 	e1 = samples[:,1:2]
+	is_teo = samples[:,8:9]
 	
 	# Normalize input
 	row_norms = np.linalg.norm(X_test, axis=1, keepdims=True)
@@ -55,7 +56,14 @@ def plot_predict_rst(axs, nn, sample_file):
 	axs.plot([0., 1.0], [-0.15, 0.85],"k--",alpha=0.3)
 	axs.set_xlim(0., 1.0)
 	axs.set_ylim(0., 1.0)
-	axs.scatter(e1, e2, c="k", s=10, marker='o', alpha=0.5)
+	no_teo_mask = np.where(is_teo == 0)
+	e1_no_teo = e1[no_teo_mask]
+	e2_no_teo = e2[no_teo_mask]
+	axs.scatter(e1_no_teo, e2_no_teo, c='k', s=10, marker='o', alpha=0.5)
+	teo_mask = np.where(is_teo == 1)
+	e1_teo = e1[teo_mask]
+	e2_teo = e2[teo_mask]
+	axs.scatter(e1_teo, e2_teo, c="r", s=10, marker='o', alpha=0.6)
 	axs.xaxis.set_major_locator(MultipleLocator(0.2))
 	axs.yaxis.set_major_locator(MultipleLocator(0.2))
 	
