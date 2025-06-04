@@ -322,7 +322,7 @@ def extractHarmonics(max_file, trf_file, freq_resolution, judge):
 		return harmonic_lst2, max_freq, max_amp/max_sn, forb2, match_cnt2, match_ratio2
 
 
-def plot_spectrum(trf_file, harmonics, f, file_path, max_freq, max_noise):
+def plot_spectrum(trf_file, harmonics, obj_id, f, file_path, max_freq, max_noise):
 	freq, amp, phase = np.loadtxt(trf_file, usecols=(0,1,2), dtype="float", unpack=True)
 	fig, axs = plt.subplots(1, 1, figsize=(7, 4), sharex=True)
 	axes1 = axs
@@ -340,7 +340,8 @@ def plot_spectrum(trf_file, harmonics, f, file_path, max_freq, max_noise):
 		axes1.plot([l*f, l*f], [y_min, y_max], line_type, lw=0.4)
 	axes1.plot(freq, amp*unit, 'k', ms=1, lw=0.5)#, alpha=0.8)
 	axes1.plot(max_freq, max_noise*unit*sn_level, 'r', ms=1, lw=0.5)
-	#axes1.set_title(kic_id)
+	title = obj_id + r", $\mathit{f}$"+ r"$_{\rm orb}$"+ "={0:.8f}".format(f)
+	axes1.set_title(title)
 	axes1.set_ylabel('Amplitude (mmag)')
 	axes1.set_xlabel('Frequency  (d$^{-1}$)')
 	
@@ -376,7 +377,7 @@ def derive_forb(obj_id, lc_path, result_path):
 		fw.write(rst)
 
 	file_path = os.path.join(result_path, obj_id+'.png')
-	plot_spectrum(trf_file, harmonics, forb, file_path,max_freq, max_noise)
+	plot_spectrum(trf_file, harmonics, obj_id, forb, file_path,max_freq, max_noise)
 
 	os.remove(trf_file)
 	os.remove(max_file)
@@ -417,7 +418,7 @@ def deriveLCs(result_path, lc_dir):
 if __name__ == "__main__":
 	fnpeaks_path = os.path.join('.', 'fnpeaks', 'fnpeaks_phase')
 	if not os.path.exists(fnpeaks_path):
-		raise ValueError('You need enter to fnpeaks dir, and run make command to build fnpeaks_phase.')
+		raise ValueError('You need to enter the fnpeaks directory and run the make command to build fnpeaks_phase.')
 	
 	result_path = os.path.join('Results', tm.strftime("%Y-%m-%d %H-%M-%S", tm.localtime())) 
 	if not os.path.exists(result_path):
